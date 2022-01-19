@@ -131,16 +131,8 @@ namespace intersectionnel
 						string d = z.text;
 						if (c == Operation.INSERT)
 						{
-							int taille = d.Length;
-							/*
-								while(taille > 0) {
-									texte += "_";
-									taille--;
-								}
-							*/
-							for (int y = 0; y < taille; y++)
-							{
-								texte = string.Concat(texte, "_");
+						    for (int taille = d.Length; taille > 0; taille--) {
+									texte = string.Concat(texte, "_");
 							}
 						}
 						else
