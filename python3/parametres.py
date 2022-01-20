@@ -29,8 +29,11 @@ DATA_TYPE = 0
 # liste vide pour aucun texte.
 textes = textes_critiques
 
-
-
+#TLG : TOO_LONG
+# TM : TIME
+TLG_TM = 2.5
+# MSG : MESSAGE
+TLG_MSG = "A CALCULER"
 
 
 

@@ -1,9 +1,10 @@
-from parametres import DATA_TYPE, textes # pour connaître le DATA_TYPE et les textes qu'on ne veut pas utiliser.
+from parametres import DATA_TYPE, textes, TLG_TM, TLG_MSG # pour connaître le DATA_TYPE et les textes qu'on ne veut pas utiliser.
 from infos import book   # pour avoir les noms de livres
 import re 		# pour la regex
 import os			# pour gérér les fichiers
 import glob		# pour gérér les fichiers
 import diff_match_patch as dmp_module	# pour comparer deux chaînes
+import time # pour pouvoir mettre de côté les versets demandant plus d'opérations
 dmp = dmp_module.diff_match_patch()
 
 
@@ -48,12 +49,18 @@ dmp.Diff_Timeout = 0
 
 # fonction qui compare une liste de chaîne.
 # codée en itérative dû au coût pour python.
-def compare(strings):
+def compare(strings, start):
 	retour = ""
 	nb_chaine = len(strings)
 	while(nb_chaine > 1):
+		end = time.time()
+		if (end - start > TLG_TM):
+			return TLG_MSG
 		common = []
 		for x in range(nb_chaine):
+			end = time.time()
+			if (end - start > TLG_TM):
+				return TLG_MSG
 			for y in range(x, nb_chaine):
 				if x != y:
 					tmp = dmp.diff_main(strings[x], strings[y])
@@ -87,9 +94,12 @@ def getManuscrit(ref, string):
 # On indique les ajouts communs des manuscrits :
 # _ implique que tous les manuscrits ont un caractère à cet endroit
 # mais qu'il n'y a pas unanimité quant à l'identication du caractère.
-def getAjout(string, ref):
+def getAjout(string, ref, start):
 	scripture = []
 	for x in data[DATA_TYPE]:
+		end = time.time()
+		if (end - start > TLG_TM):
+			return TLG_MSG
 		tmp = re.search(ref + " (.*)$", x[1],  re.MULTILINE)
 		if tmp != None:
 			modifs = dmp.diff_main(string, tmp.group(1))
@@ -111,6 +121,9 @@ def getAjout(string, ref):
 			if '_' not in y:
 				return y
 		while(len(scripture) > 1):
+			end = time.time()
+			if (end - start > TLG_TM):
+				return TLG_MSG
 			chaine = ""
 			i = 0; j = 0
 			while j != len(scripture[-1]) and i != len(scripture[-2]):
@@ -153,11 +166,19 @@ for livre in range(1, livres) :
 					tmp = re.search(ref + " (.*)", tmp.group(0))
 					texte.append(tmp.group(1))
 			
-			resultat = compare(texte)
+			ref = ref[1:-2] + nom_livre
+			start = time.time()
+			resultat = compare(texte, start)
+			
 			if resultat != "":
-				ref = ref[1:-2] + nom_livre
-				resultat = getAjout(resultat, ref)
-				manuscrit = getManuscrit(ref, resultat)
+				if resultat != TLG_MSG:
+					resultat = getAjout(resultat, ref, start)
+					if resultat != TLG_MSG:
+						manuscrit = getManuscrit(ref, resultat)
+					else:
+						manuscrit = ""
+				else:
+					manuscrit = ""
 				print(ref + manuscrit + " " + resultat)
 				
 				
