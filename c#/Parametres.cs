@@ -6,7 +6,7 @@ public class Parametres {
     public static string[]  textes = Infos.textes_critiques;
 
     
-    public static double TLG_TM = 2.5; // en secondes
+    public static double TLG_TM = 10; // en secondes
     public static string TLG_MSG = "A CALCULER";
 
     public void Main() {

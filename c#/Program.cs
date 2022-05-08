@@ -222,7 +222,7 @@ namespace intersectionnel
         }
 
 
-        static void Main(string[] args)
+        static void Main()
         {
 
             base_chemin = string.Concat(base_chemin, "nouveautestament.github.io/outil/bw/manuscrits/versifie/");
@@ -237,8 +237,7 @@ namespace intersectionnel
             getData("NS_explicited_but_not_removed/", data[1]);
             getData("NS_replaced_by_content/", data[2]);
 
-            int livres = nb_livre + 1;
-            for (int livre = 1; livre < livres; livre++)
+            for (int livre = 1; livre < nb_livre; livre++)
             {
                 string nom_livre = Infos.book[livre];
                 for (int chapitre = 1; chapitre < nb_chapitre; chapitre++)

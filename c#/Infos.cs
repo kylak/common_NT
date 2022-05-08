@@ -1,5 +1,6 @@
 public class Infos {
 
+    // Ici l'index 0 est "", le premier livre commence à l'index 1.
     public static string[] book = { "",
         "MATTHIEU", 
         "MARC",
