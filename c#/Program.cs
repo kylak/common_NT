@@ -4,6 +4,7 @@ using DiffMatchPatch;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace intersectionnel
 {
@@ -15,7 +16,8 @@ namespace intersectionnel
         public static List<Tuple<string, string>>[] data = new List<Tuple<string, string>>[3];
 
         public static int DATA_TYPE = Parametres.DATA_TYPE;
-
+        public static double TLG_TM = Parametres.TLG_TM * 1000;
+        public static string TLG_MSG = Parametres.TLG_MSG;
 
         public static string base_chemin = "/Users/gustavberloty/Documents/GitHub/Sébastien LAST/";
 
@@ -47,15 +49,21 @@ namespace intersectionnel
 
         // fonction qui compare une liste de chaîne.
         // codée en itérative dû au coût pour python.
-        public static string compare(List<string> strings)
+        public static string compare(List<string> strings, Stopwatch chrono)
         {
             string retour = "";
             int nb_chaine = strings.Count;
             while (nb_chaine > 1)
             {
+                if (chrono.ElapsedMilliseconds > TLG_TM) {
+                    return TLG_MSG;
+                }
                 List<string> common = new List<string>();
                 for (int x = 0; x < nb_chaine; x++)
                 {
+                    if (chrono.ElapsedMilliseconds > TLG_TM) {
+                        return TLG_MSG;
+                    }
                     for (int y = x + 1; y < nb_chaine; y++)
                     {
                         List<Diff> tmp = dmp.diff_main(strings[x], strings[y]);
@@ -113,11 +121,14 @@ namespace intersectionnel
         // On indique les ajouts communs des manuscrits :
         // _ implique que tous les manuscrits ont un caractère à cet endroit
         // mais qu'il n'y a pas unanimité quant à l'identication du caractère.
-        public static string getAjout(string string0, string refe)
+        public static string getAjout(string string0, string refe, Stopwatch chrono)
         {
             List<string> scripture = new List<string>();
             for (int x = 0; x < data[DATA_TYPE].Count; x++)
             {
+                if (chrono.ElapsedMilliseconds > TLG_TM) {
+                    return TLG_MSG;
+                }
                 string tmp = string.Concat(refe, " (.*)$");
                 Match tmpAj = Regex.Match(data[DATA_TYPE][x].Item2, tmp, RegexOptions.Multiline);
                 if (tmpAj.Success)
@@ -162,6 +173,9 @@ namespace intersectionnel
                 }
                 while (scripture.Count > 1)
                 {
+                    if (chrono.ElapsedMilliseconds > TLG_TM) {
+                        return TLG_MSG;
+                    }
                     string chaine = "";
                     int i = 0; int j = 0;
                     while (j != scripture.Last().Length && i != scripture[scripture.Count - 2].Length)
@@ -247,12 +261,22 @@ namespace intersectionnel
                                 texte.Add(tmp.Groups[1].Value);
                             }
                         }
-                        string resultat = compare(texte);
+
+                        Stopwatch chrono = new Stopwatch();
+                        chrono.Start();
+                        string resultat = compare(texte, chrono);
+                        
                         if (!resultat.Equals(""))
                         {
                             string refe3 = string.Concat(refe2.Substring(1, refe2.Length - 3), nom_livre);
-                            resultat = getAjout(resultat, refe3);
-                            string manuscrit = getManuscrit(refe3, resultat);
+                            string manuscrit = "";
+
+                            if (!resultat.Equals(TLG_MSG)) {
+                                resultat = getAjout(resultat, refe3, chrono);
+                                if (!resultat.Equals(TLG_MSG)) {
+                                    manuscrit = getManuscrit(refe3, resultat);
+                                }
+                            }
                             string tmp = string.Concat(refe3, manuscrit);
                             tmp = string.Concat(tmp, " ");
                             Console.WriteLine(string.Concat(tmp, resultat));

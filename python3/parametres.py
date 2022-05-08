@@ -31,7 +31,7 @@ textes = textes_critiques
 
 #TLG : TOO_LONG
 # TM : TIME
-TLG_TM = 2.5
+TLG_TM = 2.5 # en secondes
 # MSG : MESSAGE
 TLG_MSG = "A CALCULER"
 
