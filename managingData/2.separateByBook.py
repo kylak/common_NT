@@ -58,7 +58,8 @@ for line in manuscrit:
 
         # on supprime les infos génantes pour la comparaison:
         metadata = re.search("^..?(:[^:]*){3}(.*) ", line).group(2)
-        line = re.sub(metadata, '', line)
+        line = re.sub(re.escape(metadata), '', line)
+        print("ligne: " + line)
 
         # dossier versifie
         # brute
@@ -79,8 +80,7 @@ for line in manuscrit:
         file.close()
 
         # dossier brute
-        line = re.search("[^a-zA-Z0-9-:]+", line).group()
-        line = re.sub("\s", '', line)
+        line = re.search("[^\s]*\s(.*)\n", line).group()
         # brute
         tmp = re.sub("\(.*?\)", '', line)
         file = open(fichier_brute[i][0], 'a')
