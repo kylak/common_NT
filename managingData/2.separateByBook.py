@@ -59,7 +59,6 @@ for line in manuscrit:
         # on supprime les infos génantes pour la comparaison:
         metadata = re.search("^..?(:[^:]*){3}(.*) ", line).group(2)
         line = re.sub(re.escape(metadata), '', line)
-        print("ligne: " + line)
 
         # dossier versifie
         # brute
